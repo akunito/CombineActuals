@@ -197,7 +197,7 @@ def recombine(output_path, array, base_path)
 end
 
 def modify_array(output_path, array, base_path)
-  puts "function not available yet"
+  puts "\n\tfunction not available yet\n\n"
   sleep 1
 end
 
