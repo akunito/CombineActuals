@@ -142,7 +142,7 @@ def clear_screen
 end
 
 def clean(output_path, array, base_path)
-  puts "\n---------- 1 - Are you sure that you want to REMOVE all files inside the output directory ??"
+  puts "\n---------- [1] - Are you sure that you want to REMOVE all files inside the output directory ??"
   puts "---------- #{output_path}"
   puts "---------- "
   puts "---------- Please confirm with [y]"
@@ -152,12 +152,13 @@ def clean(output_path, array, base_path)
     puts "cleaning output directory #{output_path}"
     clean_output_directory(output_path)
   else
-    puts "output directory will not be cleaned this time"
+    clear_screen
+    puts "\n\tOutput directory was NOT cleaned this time\n\n"
   end
 end
 
 def merge_sap(output_path, array, base_path)
-  puts "\n---------- 2 - The SAP folders mentioned in the array will be merge by each folder/date ??"
+  puts "\n---------- [2] - The SAP folders mentioned in the array will be merge by each folder/date ??"
   puts "---------- "
   puts "---------- Please confirm with [y]"
   puts "---------- To cancel, press Enter"
@@ -174,12 +175,13 @@ def merge_sap(output_path, array, base_path)
       combine_files(full_path, output_path, folder)
     end
   else
-    puts "SAP files were not combined this time"
+    clear_screen
+    puts "\n\tSAP files were NOT merged this time\n\n"
   end
 end
 
 def recombine(output_path, array, base_path)
-  puts "\n---------- 3 - Files into the output folder will be  RECOMBINED in a new file ??"
+  puts "\n---------- [3] - Files into the output folder will be  RECOMBINED in a new file ??"
   puts "---------- "
   puts "---------- Please confirm with [y]"
   puts "---------- To cancel, press Enter"
@@ -188,6 +190,9 @@ def recombine(output_path, array, base_path)
   if input == "y"
     puts "recombining"
     combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+  else
+    clear_screen
+    puts "\n\tFiles were NOT recombined this time\n\n"
   end
 end
 
@@ -230,7 +235,7 @@ def main(output_path, array, base_path)
       end
     end
   end
-
 end
 
+clear_screen
 main(output_path, array, base_path)
