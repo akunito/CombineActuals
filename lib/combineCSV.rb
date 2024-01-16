@@ -117,13 +117,25 @@ def clean_output_directory(output_path)
   FileUtils.rm Dir.glob(output_path + '*')
 end
 
-def main(output_path, array, base_path)
-  puts
-  puts "---------- 1 - Would you like to CLEAN the output directory before combining new files ??"
+def menu
+  puts "\t-------------------------------------------------------------------"
+  puts "\t-------------------------------------------------------------------"
+  puts "\t[0] - EXIT --------------------------------------------------------"
+  puts "\t[1] - CLEAN output folder -----------------------------------------"
+  puts "\t[2] - MERGE SAP files that are included in the ARRAY --------------"
+  puts "\t[3] - RECOMBINE output files from step 2 in only 1 file -----------"
+  puts "\t[4] - Modify ARRAY (work in progress) -----------------------------"
+  puts "\t-------------------------------------------------------------------"
+  puts "\t-------------------------------------------------------------------"
+end
+
+def clean(output_path, array, base_path)
+  sleep 1
+  puts "\n---------- 1 - Are you sure that you want to REMOVE all files inside the output directory ??"
   puts "---------- #{output_path}"
   puts "---------- "
   puts "---------- Please confirm with [y]"
-  puts "---------- To ignore, press Enter"
+  puts "---------- To cancel, press Enter"
   input = gets.chomp
   if input == "y"
     puts "cleaning output directory #{output_path}"
@@ -131,12 +143,14 @@ def main(output_path, array, base_path)
   else
     puts "output directory will not be cleaned this time"
   end
+end
 
-  puts
-  puts "---------- 2 - Would you like to combine the array's folders ??"
+def merge_sap(output_path, array, base_path)
+  sleep 1
+  puts "\n---------- 2 - The SAP folders mentioned in the array will be merge by each folder/date ??"
   puts "---------- "
   puts "---------- Please confirm with [y]"
-  puts "---------- To ignore, press Enter"
+  puts "---------- To cancel, press Enter"
   input = gets.chomp
   if input == "y"
     # go through the array and combine all the files found into the folders
@@ -150,20 +164,58 @@ def main(output_path, array, base_path)
       combine_files(full_path, output_path, folder)
     end
   else
-    puts "array's folder were not combined this time"
+    puts "SAP files were not combined this time"
   end
+end
 
-  puts
-  puts "---------- 3 - Would you like to RECOMBINE the NEW files in a new file ??"
+def recombine(output_path, array, base_path)
+  sleep 1
+  puts "\n---------- 3 - Files into the output folder will be  RECOMBINED in a new file ??"
   puts "---------- "
   puts "---------- Please confirm with [y]"
-  puts "---------- To ignore, press Enter"
+  puts "---------- To cancel, press Enter"
 
   input = gets.chomp
   if input == "y"
     puts "recombining"
     combine_files(base_path + 'combined_files/', output_path, 'combined_files')
   end
+end
+
+def modify_array(output_path, array, base_path)
+  puts "option not available yet"
+  sleep 1
+end
+
+def main(output_path, array, base_path)
+  input = 99
+  while input != 0
+    menu
+    puts "\nPlease, choose an option >>"
+    begin
+      input = Kernel.gets.match(/\d+/)[0].to_i
+    rescue
+      puts "Erroneous input! Try again..."
+      sleep 2
+      menu
+    else
+      case input
+      when 0
+        exit!
+      when 1
+        clean(output_path, array, base_path)
+      when 2
+        merge_sap(output_path, array, base_path)
+      when 3
+        recombine(output_path, array, base_path)
+      when 4
+        modify_array(output_path, array, base_path)
+      else
+        puts "option not available"
+      end
+    end
+  end
+
 end
 
 main(output_path, array, base_path)
