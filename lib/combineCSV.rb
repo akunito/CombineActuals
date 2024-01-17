@@ -41,8 +41,9 @@ array = %w[20240120]
 # 20240131
 # ]
 
-output_path = "C:/data_exchange/archive/combined_files/"
-base_path = "C:/data_exchange/archive/"
+
+environment == "PROD" ? output_path = "d:/data_exchange/archive/combined_files/" : output_path = "C:/data_exchange/archive/combined_files/"
+environment == "PROD" ? base_path = "d:/data_exchange/archive/" : output_path = "C:/data_exchange/archive/combined_files/"
 
 def combine_files(full_path, output_path, folder)
     def merge_file(result_file, headers, file_list, output_path, full_path)
@@ -197,7 +198,29 @@ def recombine(output_path, array, base_path)
 end
 
 def modify_array(output_path, array, base_path)
-  puts "\n\tfunction not available yet\n\n"
+  puts "\n\tThis function will update the array of folders"
+  puts "\tYou have to choose from which one to which one"
+  puts "\tFor example if you choose: "
+  puts "\t\tFROM -> Year: 2024 Month: 01 Day 01"
+  puts "\t\tTO   ->                      Day 30"
+  puts "\n\t"
+  sleep 1
+  puts "\tArray will contain the dates/folders like follow:"
+  puts "\t\t 20240101, 20240102, 20240103 ....... 20240130"
+  puts "\n\tIf a folder does not exist, it will be skipped"
+  sleep 1
+  puts "\n---------- "
+  puts "---------- Please confirm with [y]"
+  puts "---------- To cancel, press Enter"
+
+  input = gets.chomp
+  if input == "y"
+    puts "recombining"
+    combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+  else
+    clear_screen
+    puts "\n\tFiles were NOT recombined this time\n\n"
+  end
   sleep 1
 end
 
@@ -238,4 +261,5 @@ def main(output_path, array, base_path)
 end
 
 clear_screen
-main(output_path, array, base_path)
+main(output_path, array, base_pat, "TEST")
+# main(output_path, array, base_pat, "PROD")
