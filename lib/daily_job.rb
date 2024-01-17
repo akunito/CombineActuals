@@ -13,6 +13,8 @@
 # libraries
 require 'date'
 require 'fileutils'
+require './lib/combine_CSV_files'
+require './lib/environment'
 
 # get time
 def get_full_datetime
@@ -40,9 +42,7 @@ def get_last_month_z_file(files, opt)
   files_period.select { |f| f.include?(opt)}
 end
 
-# remove files older than 120 days
 
-# Import Actuals to current directory
 def copy_files(origin, destination, origen_filename, destination_filename)
   origin = origin + origen_filename
   destination = destination + "\\" + destination_filename
@@ -51,30 +51,28 @@ def copy_files(origin, destination, origen_filename, destination_filename)
   FileUtils.cp(origin, destination)
   destination
 end
-# combine last files with month file
 
 
 def main(environment)
-  # Get userprofile path in Windows
-  user_path = ENV["USERPROFILE"]
-
-  # Get path variables
-  daily_actuals = user_path + '\OneDrive - Schenker AG\Documents\_Daily_Actuals'
-  environment == "PROD" ? actuals_dir = "D:\\data_exchange\\actuals\\" : actuals_dir = "C:\\data_exchange\\actuals\\"
-
   # Get last month combined opex and capex's filenames
-  files = read_directory(daily_actuals)
+  files = read_directory(_daily_actuals_dir)
   last_month_z_file_opex = get_last_month_z_file(files, "opex")
   last_month_z_file_capex = get_last_month_z_file(files, "capex")
 
   puts get_full_datetime
   # import new combined_files
-  new_combined_opex_file = copy_files(actuals_dir, daily_actuals, "combined_opex.csv", get_full_datetime+"_combined_opex.csv")
-  new_combined_capex_file = copy_files(actuals_dir, daily_actuals, "combined_capex.csv", get_full_datetime+"_combined_capex.csv")
-
-  puts
-  puts new_combined_opex_file
+  new_combined_opex_file = copy_files(actuals_dir, _daily_actuals_dir, "combined_opex.csv", get_full_datetime+"_combined_opex.csv")
+  new_combined_capex_file = copy_files(actuals_dir, _daily_actuals_dir, "combined_capex.csv", get_full_datetime+"_combined_capex.csv")
   puts new_combined_capex_file
+  puts new_combined_opex_file
+
+  # combine last daily file with last month file
+  puts
+  puts base_path
+  puts output_path
+  # combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+  # remove files older than 125 days
+
 end
 
 main("TEST")
