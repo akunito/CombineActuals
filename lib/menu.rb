@@ -9,10 +9,10 @@ puts 'CSVReader initialized.'
 # ruby D:\data_exchange\archive\menu.rb
 
 # Add to the array all the folders that must be combined
-array = %w[20240120]
-# 20240101
-# 20240102
-# 20240103
+array = %w[
+20240101
+20240102
+20240103]
 # 20240104
 # 20240105
 # 20240106
@@ -103,7 +103,7 @@ def merge_sap(output_path, array, base_path)
       # path (it must exists)
       full_path = base_path + folder + "/"
 
-      combine_files(full_path, output_path, folder)
+      combine_files_by_folder(full_path, output_path, folder)
     end
   else
     clear_screen
@@ -120,7 +120,7 @@ def recombine(output_path, array, base_path)
   input = gets.chomp
   if input == "y"
     puts "recombining"
-    combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+    combine_files_by_folder(base_path + 'combined_files/', output_path, 'combined_files')
   else
     clear_screen
     puts "\n\tFiles were NOT recombined this time\n\n"
@@ -146,7 +146,7 @@ def modify_array(output_path, array, base_path)
   input = gets.chomp
   if input == "y"
     puts "recombining"
-    combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+    combine_files_by_folder(base_path + 'combined_files/', output_path, 'combined_files')
   else
     clear_screen
     puts "\n\tFiles were NOT recombined this time\n\n"
