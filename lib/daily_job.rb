@@ -45,11 +45,11 @@ end
 
 def copy_files(origin, destination, origen_filename, destination_filename)
   origin = origin + origen_filename
-  destination = destination + "\\" + destination_filename
+  destination = destination + "/" + destination_filename
   puts "origin: #{origin}"
   puts "destination: #{destination}"
   FileUtils.cp(origin, destination)
-  destination
+  destination_filename
 end
 
 
@@ -63,14 +63,18 @@ def main(environment)
   # import new combined_files
   new_combined_opex_file = copy_files(actuals_dir, _daily_actuals_dir, "combined_opex.csv", get_full_datetime+"_combined_opex.csv")
   new_combined_capex_file = copy_files(actuals_dir, _daily_actuals_dir, "combined_capex.csv", get_full_datetime+"_combined_capex.csv")
-  puts new_combined_capex_file
-  puts new_combined_opex_file
+
+  # create array containing files to be merged
+  filenames_array = []
+  filenames_array.push(new_combined_capex_file.to_s,
+                       new_combined_opex_file.to_s,
+                       last_month_z_file_opex[0].to_s,
+                       last_month_z_file_capex[0].to_s)
 
   # combine last daily file with last month file
-  puts
-  puts base_path
-  puts output_path
-  # combine_files(base_path + 'combined_files/', output_path, 'combined_files')
+  puts "\n_daily_actuals_dir #{_daily_actuals_dir}"
+  combine_specific_files(_daily_actuals_dir, filenames_array, _daily_actuals_dir, get_period )
+
   # remove files older than 125 days
 
 end

@@ -16,13 +16,20 @@ end
 
 # Get userprofile path in Windows example: "C:/users/DIERUEDA/"
 def user_path
-  ENV["USERPROFILE"]
+  user_path = ENV["USERPROFILE"]
+  user_path = user_path.split('')
+  user_path.map! { |c| (c == "\\") ? '/' : c }
+  user_path.join
 end
 
 # Get path variables
 def _daily_actuals_dir
-  @environment == "PROD" ? 'C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals' : user_path + '\OneDrive - Schenker AG\Documents\_Daily_Actuals'
+  @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : user_path + "/OneDrive - Schenker AG/Documents/_Daily_Actuals/"
 end
 def actuals_dir
-  @environment == "PROD" ? "D:\\data_exchange\\actuals\\" : "C:\\data_exchange\\actuals\\"
+  @environment == "PROD" ? "D:/data_exchange/actuals/" : "C:/data_exchange/actuals/"
 end
+
+
+
+p user_path
