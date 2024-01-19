@@ -24,7 +24,8 @@ end
 
 # Get path variables
 def _daily_actuals_dir
-  @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : user_path + "/OneDrive - Schenker AG/Documents/_Daily_Actuals/"
+  # @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : user_path + "/OneDrive - Schenker AG/Documents/_Daily_Actuals/"
+  @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : "C:/data_exchange/archive/_Daily_Actuals/"
 end
 def actuals_dir
   @environment == "PROD" ? "D:/data_exchange/actuals/" : "C:/data_exchange/actuals/"
