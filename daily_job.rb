@@ -1,54 +1,9 @@
 require 'date'
 require 'fileutils'
-require_relative './lib/combine_CSV_files'
+require_relative './lib/library'
 require_relative './lib/environment'
 
 # get time
-def get_full_datetime
-  d = DateTime.now
-  d.strftime("%Y%m%d_%Hh%Mm")
-end
-
-def get_yesterday_csv_files
-  d = Date.today.prev_day
-  files = read_directory(CSV_DAILY_ACTUALS)
-  yesterday_files = d.strftime("%Y%m%d")
-  files.select { |f| f.include?(yesterday_files)}
-end
-
-def get_period
-  d = DateTime.now
-  d.strftime("%Y%m")
-end
-
-# read directories
-def read_directory(daily_actuals)
-  # puts Dir.entries daily_actuals
-  (Dir.entries(daily_actuals).select { |f| File.file? File.join(daily_actuals, f) }).to_ary
-end
-
-def get_last_month_z_file(files, opt)
-  # 'files' must be an array including filenames
-  # 'opt' argument must includes an string to be found in the filename, ex: "opex" or "capex"
-  looking = get_period + 'z'
-  # puts "\n---looking for: #{looking}"
-  files_period = files.select { |f| f.include?(looking)}
-  files_period.select { |f| f.include?(opt)}
-end
-
-def remove_files(directory, files)
-  files.each { |file| FileUtils.rm Dir.glob(directory + file) }
-end
-
-def copy_files(origin, destination, origen_filename, destination_filename)
-  origin = origin + origen_filename
-  destination = destination + "/" + destination_filename
-  puts "origin: #{origin}"
-  puts "destination: #{destination}"
-  FileUtils.cp(origin, destination)
-  destination_filename
-end
-
 
 def main
   # Get last month combined opex and capex filenames
@@ -76,7 +31,7 @@ def main
   combine_specific_files(CSV_DAILY_ACTUALS, filenames_array, CSV_DAILY_ACTUALS, result_name )
 
   # remove yesterday files
-  remove_files(CSV_DAILY_ACTUALS, get_yesterday_csv_files)
+  remove_files(CSV_DAILY_ACTUALS, get_yesterday_csv_files(CSV_DAILY_ACTUALS))
 
   # remove files older than 125 days
 
