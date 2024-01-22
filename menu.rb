@@ -72,7 +72,7 @@ def clear_screen
   end
 end
 
-def clean(output_path, array, base_path)
+def clean(output_path)
   puts "\n---------- [1] - Are you sure that you want to REMOVE all files inside the output directory ??"
   puts "---------- #{output_path}"
   puts "---------- "
@@ -111,7 +111,7 @@ def merge_sap(output_path, array, base_path)
   end
 end
 
-def recombine(output_path, array, base_path)
+def recombine(output_path, base_path)
   puts "\n---------- [3] - Files into the output folder will be  RECOMBINED in a new file ??"
   puts "---------- "
   puts "---------- Please confirm with [y]"
@@ -171,13 +171,13 @@ def main(output_path, array, base_path)
         exit!
       when 1
         clear_screen
-        clean(output_path, array, base_path)
+        clean(output_path)
       when 2
         clear_screen
         merge_sap(output_path, array, base_path)
       when 3
         clear_screen
-        recombine(output_path, array, base_path)
+        recombine(output_path, base_path)
       when 4
         clear_screen
         modify_array(output_path, array, base_path)
@@ -192,4 +192,4 @@ end
 
 clear_screen
 
-main(output_path, array, base_path)
+main(CSV_COMBINED_FILES, array, CSV_ARCHIVE)
