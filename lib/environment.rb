@@ -14,7 +14,7 @@ def base_path
   @environment == "PROD" ? "d:/data_exchange/archive/" : "C:/data_exchange/archive/"
 end
 
-# Get userprofile path in Windows example: "C:/users/DIERUEDA/"
+# Get userprofile path in Windows example: "C:/users/MY_USER_NAME/"
 def user_path
   user_path = ENV["USERPROFILE"]
   user_path = user_path.split('')
@@ -22,10 +22,17 @@ def user_path
   user_path.join
 end
 
+# Get the custom system variable created in Windows for my main onedrive folder
+def get_onedrive_dr_env_var
+  path = ENV["OneDrive_DR"]
+  path = user_path.split('')
+  path.map! { |c| (c == "\\") ? '/' : c }
+  path.join
+end
+
 # Get path variables
 def _daily_actuals_dir
-  # @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : user_path + "/OneDrive - Schenker AG/Documents/_Daily_Actuals/"
-  @environment == "PROD" ? "C:/Users/adm.dierueda/OneDrive - Schenker AG/Documents/_Daily_Actuals/" : "C:/data_exchange/archive/_Daily_Actuals/"
+  @environment == "PROD" ? get_onedrive_dr_env_var + "/Documents/_Daily_Actuals/" : "C:/data_exchange/archive/_Daily_Actuals/"
 end
 def actuals_dir
   @environment == "PROD" ? "D:/data_exchange/actuals/" : "C:/data_exchange/actuals/"

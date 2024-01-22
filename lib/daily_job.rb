@@ -1,16 +1,3 @@
-# remove files older than 120 days
-# ForFiles /p "C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals\" /s /d -120 /c “cmd /c del /q @file"
-#
-# # Import Actuals to current directory
-# robocopy D:\data_exchange\actuals "C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals" "combined_capex.csv"
-# robocopy D:\data_exchange\actuals "C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals" "combined_opex.csv"
-#
-# # rename files
-# ren "C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals\combined_capex.csv" %date:~10,4%%date:~7,2%%date:~4,2%combined_capex.csv
-#
-# ren "C:\Users\adm.dierueda\OneDrive - Schenker AG\Documents\_Daily_Actuals\combined_opex.csv" %date:~10,4%%date:~7,2%%date:~4,2%combined_opex.csv
-
-# libraries
 require 'date'
 require 'fileutils'
 require './lib/combine_CSV_files'
