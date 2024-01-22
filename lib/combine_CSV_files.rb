@@ -96,15 +96,14 @@ def combine_files_by_folder(full_path, output_path, folder)
   end
 end
 
-def combine_specific_files(full_path, filenames_array, output_path, period)
+def combine_specific_files(full_path, filenames_array, output_path, result_file)
   filenames = filenames_array
   # divide opex and capex files
   opex_files = get_opex_files(filenames)
   capex_files = get_capex_files(filenames)
   # display stats in console
   display_file_stats(filenames, full_path, opex_files, capex_files)
-  # name for output / result file
-  result_file = "new_" + period + "z_FullMonth_combined"
+
   # # debugging
   # puts "\n///////// debugging combine_specific_files"
   # p "result_file: #{result_file}"

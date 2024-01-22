@@ -1,7 +1,7 @@
 require 'csv'
 require 'fileutils'
-require './lib/combine_CSV_files'
-require './lib/environment'
+require_relative './lib/combine_CSV_files'
+require_relative './lib/environment'
 
 puts 'CSVReader initialized.'
 

@@ -1,12 +1,19 @@
 require 'date'
 require 'fileutils'
-require './lib/combine_CSV_files'
-require './lib/environment'
+require_relative './lib/combine_CSV_files'
+require_relative './lib/environment'
 
 # get time
 def get_full_datetime
   d = DateTime.now
   d.strftime("%Y%m%d_%Hh%Mm")
+end
+
+def get_yesterday_csv_files
+  d = Date.today.prev_day
+  files = read_directory(_daily_actuals_dir)
+  yesterday_files = d.strftime("%Y%m%d")
+  files.select { |f| f.include?(yesterday_files)}
 end
 
 def get_period
@@ -29,6 +36,9 @@ def get_last_month_z_file(files, opt)
   files_period.select { |f| f.include?(opt)}
 end
 
+def remove_files(directory, files)
+  files.each { |file| FileUtils.rm Dir.glob(directory + file) }
+end
 
 def copy_files(origin, destination, origen_filename, destination_filename)
   origin = origin + origen_filename
@@ -40,7 +50,7 @@ def copy_files(origin, destination, origen_filename, destination_filename)
 end
 
 
-def main(environment)
+def main()
   # Get last month combined opex and capex's filenames
   files = read_directory(_daily_actuals_dir)
   last_month_z_file_opex = get_last_month_z_file(files, "opex")
@@ -58,13 +68,18 @@ def main(environment)
                        last_month_z_file_opex[0].to_s,
                        last_month_z_file_capex[0].to_s)
 
+  # Result file name
+  result_name = period + "z_FullMonth_combined"
+
   # combine last daily file with last month file
   puts "\n_daily_actuals_dir #{_daily_actuals_dir}"
   combine_specific_files(_daily_actuals_dir, filenames_array, _daily_actuals_dir, get_period )
+
+  # remove yesterday files
+  remove_files(_daily_actuals_dir, get_yesterday_csv_files)
 
   # remove files older than 125 days
 
 end
 
-main("TEST")
-# main("PROD")
+main

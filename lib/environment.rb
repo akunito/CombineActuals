@@ -22,12 +22,12 @@ def user_path
   user_path.join
 end
 
-# Get the custom system variable created in Windows for my main onedrive folder
+# Get the system variable created in Windows for my main onedrive folder
 def get_onedrive_dr_env_var
-  path = ENV["OneDrive_DR"]
-  path = path.split('')
-  path.map! { |c| (c == "\\") ? '/' : c }
-  path.join
+  one_path = ENV["ONEDRIVE_DR"]
+  one_path = one_path.split('')
+  one_path.map! { |c| (c == "\\") ? '/' : c }
+  one_path.join
 end
 
 # Get path variables
@@ -37,6 +37,3 @@ end
 def actuals_dir
   @environment == "PROD" ? "D:/data_exchange/actuals/" : "C:/data_exchange/actuals/"
 end
-
-p user_path
-p get_onedrive_dr_env_var
