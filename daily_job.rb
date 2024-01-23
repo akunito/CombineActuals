@@ -31,6 +31,7 @@ def main
   combine_specific_files(CSV_DAILY_ACTUALS, filenames_array, CSV_DAILY_ACTUALS, result_name )
 
   # remove yesterday files
+  puts "removing files"
   remove_files(CSV_DAILY_ACTUALS, get_yesterday_csv_files(CSV_DAILY_ACTUALS))
 
   # remove files older than 125 days
