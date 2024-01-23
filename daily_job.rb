@@ -24,15 +24,16 @@ def main
                        last_month_z_file_capex[0].to_s)
 
   # Result file name
-  result_name = get_period + "z_FullMonth_combined"
+  result_name = get_period + "z_" + get_full_datetime + "_FullMonth_combined"
 
   # combine last daily file with last month file
   puts "\nCSV_DAILY_ACTUALS #{CSV_DAILY_ACTUALS}"
   combine_specific_files(CSV_DAILY_ACTUALS, filenames_array, CSV_DAILY_ACTUALS, result_name )
 
   # remove yesterday files
-  puts "removing files"
-  remove_files(CSV_DAILY_ACTUALS, get_yesterday_csv_files(CSV_DAILY_ACTUALS))
+  puts "\nRemoving files..."
+
+  remove_files(CSV_DAILY_ACTUALS, filenames_array)
 
   # remove files older than 125 days
 

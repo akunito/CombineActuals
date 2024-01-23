@@ -12,16 +12,16 @@ CSV_ARCHIVE = clean_var_slashes(ENV["CSV_ARCHIVE"])
 
 USER_PATH = clean_var_slashes(ENV["USERPROFILE"])
 
-CSV_ONEDRIVE = clean_var_slashes(ENV["ONEDRIVE_DR"])
+CSV_ONEDRIVE = clean_var_slashes(ENV["CSV_ONEDRIVE_DR"])
 
 CSV_DAILY_ACTUALS = clean_var_slashes(ENV["CSV_DAILY_ACTUALS"])
 
 CSV_ACTUALS = clean_var_slashes(ENV["CSV_ACTUALS"])
 
-# def output_path > CSV_COMBINED_FILES
-# def base_path > CSV_ARCHIVE
-# def user_path > USER_PATH
-# def get_onedrive_dr_env_var > CSV_ONEDRIVE
-# def _daily_actuals_dir > CSV_DAILY_ACTUALS
 
-#
+# p CSV_COMBINED_FILES
+# p CSV_ARCHIVE
+# p USER_PATH
+# p CSV_ONEDRIVE
+# p CSV_DAILY_ACTUALS
+# p CSV_ACTUALS
