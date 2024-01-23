@@ -91,7 +91,7 @@ def recombine(output_path, base_path)
     if prefix == ''
       prefix = files[0][..5]
     end
-    combine_files_by_folder(base_path + 'combined_files/', output_path, prefix, 'z_FullMonth')
+    combine_files_by_folder(base_path + 'combined_files/', output_path, prefix, 'z_FullMonth_combined')
 
     puts "\n---------- Would you like to remove the files that have been USED to create the NEW ones ??"
     files.each { |file| puts "---------- -> #{output_path + file}" }
