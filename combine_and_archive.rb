@@ -3,8 +3,12 @@ require 'fileutils'
 require_relative './lib/library'
 require_relative './lib/environment'
 
+def import_sap_files
+  # import sap files
+  move_files(CSV_SFTP_FILES, CSV_ACTUALS, read_directory(CSV_SFTP_FILES))
+end
 
-def main
+def combine_and_archive
     # Get today combined opex and capex filenames from the current folder
     files = read_directory(CSV_ACTUALS)
     opex_files = get_opex_files_by_extension(files, ".gz")
@@ -34,7 +38,7 @@ def main
     merge_file(combined_opex_name, "opex", opex_files, CSV_ACTUALS, CSV_ACTUALS)
     merge_file(combined_capex_name, "capex", capex_files, CSV_ACTUALS, CSV_ACTUALS)
     merge_file(combined_capex_depr_name, "capex_depr", capex_depr_files, CSV_ACTUALS, CSV_ACTUALS)
-  
+
     # get full datetime
     full_datetime = get_full_datetime
     # create a directory with full_datetime
@@ -46,4 +50,5 @@ def main
     move_files(CSV_ACTUALS, (CSV_ARCHIVE+full_datetime), capex_depr_files)
   end
   
-  main  
+  import_sap_files
+  combine_and_archive  
