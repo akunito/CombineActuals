@@ -3,6 +3,8 @@ require 'fileutils'
 require_relative './lib/library'
 require_relative './lib/environment'
 
+
+
 def import_sap_files
   # import sap files
   move_files(CSV_SFTP_FILES, CSV_ACTUALS, read_directory(CSV_SFTP_FILES))
@@ -50,5 +52,6 @@ def combine_and_archive
     move_files(CSV_ACTUALS, (CSV_ARCHIVE+full_datetime), capex_depr_files)
   end
   
+  clean_sap_files
   import_sap_files
   combine_and_archive  

@@ -264,6 +264,11 @@ def merge_file(result_file, headers, file_list, output_path, full_path)
   end
 end
 
+def filter_by_extension(filenames, extension)
+  filenames.select! { |filename| filename.match?(extension) }
+  filenames
+end
+
 def display_file_stats(filenames, full_path, opex_files, capex_files)
   # puts
   # p "filenames: #{filenames}"
@@ -400,4 +405,38 @@ def combine_specific_files(full_path, filenames_array, output_path, result_file)
   merge_file(result_file + "_opex.csv", "opex", opex_files, output_path, full_path)
   merge_file(result_file + "_capex.csv", "capex", capex_files, output_path, full_path)
   puts "Files are ready in #{output_path}"
+end
+
+def clean_sap_files
+  # Get a list of all .gz files in the folder
+  puts "\nsftp folder here #{CSV_SFTP_FILES}"
+  sap_files = read_directory(CSV_SFTP_FILES)
+  sap_files = filter_by_extension(sap_files, ".gz")
+
+  # print sap_files
+  # sap_files.each { |file| puts file }
+  puts "\nSAP files here ================"
+  p sap_files
+
+  # Process each .csv file
+  puts "\starting cleaning loop ========================"
+  sap_files.each do |fileName|
+    file_path = CSV_SFTP_FILES + fileName
+    # Read the content of the .csv file
+    csv_data = CSV.read(file_path, quote_char: "\x00") # Use a custom quote character (null byte)
+  
+    # Remove double quotes and exclamation marks from each cell
+    modified_data = csv_data.map do |row|
+      row.map do |cell|
+        next cell if cell.nil? # Skip empty cells
+        cell.gsub(/["!]/, '')
+      end
+    end
+  
+    # Write the modified data back to the .csv file
+    CSV.open(file_path, 'w', quote_char: "\x00") do |csv| # Use the same custom quote character
+      modified_data.each { |row| csv << row }
+    end
+  end
+  puts "Double quotes and exclamation marks removed from all .csv files in #{CSV_SFTP_FILES}."
 end

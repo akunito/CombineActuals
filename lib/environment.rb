@@ -18,7 +18,7 @@ CSV_DAILY_ACTUALS = clean_var_slashes(ENV["CSV_DAILY_ACTUALS"])
 
 CSV_ACTUALS = clean_var_slashes(ENV["CSV_ACTUALS"])
 
-# CSV_SFTP_FILES = clean_var_slashes(ENV["CSV_SFTP_FILES"])
+CSV_SFTP_FILES = clean_var_slashes(ENV["CSV_SFTP_FILES"])
 
 
 # p CSV_COMBINED_FILES
