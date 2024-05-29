@@ -234,28 +234,32 @@ def move_files(origin, destination, files)
 end
 
 def merge_file(result_file, headers, file_list, output_path, full_path)
-  # headers must be a string "opex" or "capex"
-  # assigning right headers:
-  if headers == "opex"
-    headers = %w{SYSID	MANDT	KOKRS	REFBK	K_GJAHR	PERIO	ZZLEISTPER	KOSTL	OBJNR_N1	REFBN	BELNR	BUZEI	BLART	BLTXT_F	SGTXT_F	BLDAT_F	BUDAT_F	KSTAR	KSTAR_KTXT	GKONT	GKOAR	GKONT_KTXT	WOGBTR_F	OWAER	WTGBTR_F	TWAER	WKGBTR_F	KWAER	MBGBTR_F	VBUND	ZZZUKO1	REFBN_ZUONR_F	STOKZ	STFLG	AWORG_REV	AWREF_REV	XBLNR_F}
-  elsif headers == "capex"
-    headers = %w{SYSID	MANDT	KOKRS	BUKRS	ANLN1	ANLN2	KOSTL	ANLKL	GJAHR	MONAT	BELNR	BUDAT_F	BWASL	ANBTR_F	WAERS	SGTXT_F	BZDAT_F	MENGE_F	MEINS	ORIGIN_F	XBLNR_F	CAUFN	ANLHTXT_F}
-  end
-  result_full_path = output_path + result_file
-  # # debugging
-  # puts "\n///////// debugging merge_file"
-  # p "result_full_path: #{result_full_path}"
-  # p "headers: #{headers}"
-  # p "file_list: #{file_list}"
-  # p "output_path: #{output_path}"
-  # p "full_path: #{full_path}"
-  # p full_path + file_list[0]
-  # p full_path + file_list[1]
-  CSV.open(result_full_path, 'w') do |csv|
-    csv << headers
-    file_list.each do |filename|
-      # CSV.open(filename, headers: true)
-      CSV.foreach(full_path + filename, headers: true) {|row| csv << row.values_at(*headers) }
+  unless file_list.empty?
+    # headers must be a string "opex" or "capex"
+    # assigning right headers:
+    if headers == "opex"
+      headers = %w{SYSID	MANDT	KOKRS	REFBK	K_GJAHR	PERIO	ZZLEISTPER	KOSTL	OBJNR_N1	REFBN	BELNR	BUZEI	BLART	BLTXT_F	SGTXT_F	BLDAT_F	BUDAT_F	KSTAR	KSTAR_KTXT	GKONT	GKOAR	GKONT_KTXT	WOGBTR_F	OWAER	WTGBTR_F	TWAER	WKGBTR_F	KWAER	MBGBTR_F	VBUND	ZZZUKO1	REFBN_ZUONR_F	STOKZ	STFLG	AWORG_REV	AWREF_REV	XBLNR_F}
+    elsif headers == "capex"
+      headers = %w{SYSID	MANDT	KOKRS	BUKRS	ANLN1	ANLN2	KOSTL	ANLKL	GJAHR	MONAT	BELNR	BUDAT_F	BWASL	ANBTR_F	WAERS	SGTXT_F	BZDAT_F	MENGE_F	MEINS	ORIGIN_F	XBLNR_F	CAUFN	ANLHTXT_F}
+    elsif headers == "capex_depr"
+      headers = %w{SYSID	MANDT	KOKRS	BUKRS	ANLN1	ANLN2	KOSTL	ANLKL	GJAHR	MONAT	BELNR	BUDAT_F	BWASL	ANBTR_F	WAERS	SGTXT_F	BZDAT_F	MENGE_F	MEINS	ORIGIN_F	XBLNR_F	CAUFN	ANLHTXT_F}
+    end
+    result_full_path = output_path + result_file
+    # # debugging
+    # puts "\n///////// debugging merge_file"
+    # p "result_full_path: #{result_full_path}"
+    # p "headers: #{headers}"
+    # p "file_list: #{file_list}"
+    # p "output_path: #{output_path}"
+    # p "full_path: #{full_path}"
+    # p full_path + file_list[0]
+    # p full_path + file_list[1]
+    CSV.open(result_full_path, 'w') do |csv|
+      csv << headers
+      file_list.each do |filename|
+        # CSV.open(filename, headers: true)
+        CSV.foreach(full_path + filename, headers: true) {|row| csv << row.values_at(*headers) }
+      end
     end
   end
 end
@@ -283,22 +287,26 @@ def display_file_stats(filenames, full_path, opex_files, capex_files)
 end
 
 def get_opex_files(filenames)
-  # check filenames array and select only the ones that contains opex or CP in the name
+  # check filenames array and select only the ones that match the opex or the opex pattern
   puts "note that this does not filter by extension !!"
   p filenames
+  # select only if matches the pattern
   filenames.select do |filename|
-    filename.include?("CP") ||
+    filename.match?(pattern) ||
       filename.include?("opex")
   end
 end
 
 # get opex files filtered by extension
 def get_opex_files_by_extension(filenames, extension)
-  # check filenames array and select only the ones that contains opex or CP in the name
+  # check filenames array and select only the ones that contains opex or the opex pattern
+  # matching the given extension
+  pattern = /CP.*B1F/
   # remove all files that are not matching the extension
   filenames.select! { |filename| filename.match?(extension) }
+  # select only if matches the pattern
   filenames.select do |filename|
-    filename.include?("CP") ||
+    filename.match?(pattern) ||
       filename.include?("opex")
   end
 end
@@ -309,7 +317,7 @@ def get_capex_files_by_extension(filenames, extension)
   # remove all files that are not matching the extension
   filenames.select! { |filename| filename.match?(extension) }
   filenames.select do |filename|
-    filename.include?("AMP") ||
+    filename.include?("AMPB1F") ||
       filename.include?("capex")
   end
 end
@@ -319,8 +327,29 @@ def get_capex_files(filenames)
   puts "note that this does not filter by extension !!"
   p filenames
   filenames.select do |filename|
-    filename.include?("AMP") ||
+    filename.include?("AMPB1F") ||
       filename.include?("capex")
+  end
+end
+
+# get capex files filtered by extension
+def get_capex_depr_files_by_extension(filenames, extension)
+  # check filenames array and select only the ones that contains capex or AMP in the name
+  # remove all files that are not matching the extension
+  filenames.select! { |filename| filename.match?(extension) }
+  filenames.select do |filename|
+    filename.include?("AMIB1F") ||
+      filename.include?("capex_depr")
+  end
+end
+
+def get_capex_depr_files(filenames)
+  # check filenames array and select only the ones that contains capex or AMP in the name
+  puts "note that this does not filter by extension !!"
+  p filenames
+  filenames.select do |filename|
+    filename.include?("AMIB1F") ||
+      filename.include?("capex_depr")
   end
 end
 
