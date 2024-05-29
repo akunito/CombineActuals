@@ -409,34 +409,33 @@ end
 
 def clean_sap_files
   # Get a list of all .gz files in the folder
-  puts "\nsftp folder here #{CSV_SFTP_FILES}"
+  puts "=============== Cleaning SAP files: Reading sftp on:  #{CSV_SFTP_FILES}"
   sap_files = read_directory(CSV_SFTP_FILES)
   sap_files = filter_by_extension(sap_files, ".gz")
 
-  # print sap_files
-  # sap_files.each { |file| puts file }
-  puts "\nSAP files here ================"
-  p sap_files
+  unless sap_files.empty?
+    # Process each .csv file in the folder
+    puts "\n============ Cleaning: Starting cleaning loop ========================"
+    sap_files.each do |fileName|
+      file_path = CSV_SFTP_FILES + fileName
+      # Read the content of the .csv file
+      csv_data = CSV.read(file_path, quote_char: "\x00") # Use a custom quote character (null byte)
 
-  # Process each .csv file
-  puts "\starting cleaning loop ========================"
-  sap_files.each do |fileName|
-    file_path = CSV_SFTP_FILES + fileName
-    # Read the content of the .csv file
-    csv_data = CSV.read(file_path, quote_char: "\x00") # Use a custom quote character (null byte)
-  
-    # Remove double quotes and exclamation marks from each cell
-    modified_data = csv_data.map do |row|
-      row.map do |cell|
-        next cell if cell.nil? # Skip empty cells
-        cell.gsub(/["!]/, '')
+      # Remove double quotes and exclamation marks from each cell
+      modified_data = csv_data.map do |row|
+        row.map do |cell|
+          next cell if cell.nil? # Skip empty cells
+          cell.gsub(/["!]/, '')
+        end
+      end
+
+      # Write the modified data back to the .csv file
+      CSV.open(file_path, 'w', quote_char: "\x00") do |csv| # Use the same custom quote character
+        modified_data.each { |row| csv << row }
       end
     end
-  
-    # Write the modified data back to the .csv file
-    CSV.open(file_path, 'w', quote_char: "\x00") do |csv| # Use the same custom quote character
-      modified_data.each { |row| csv << row }
-    end
+    puts "Double quotes and exclamation marks removed from all .gz files in #{CSV_SFTP_FILES}."
+  else
+    puts "========= Cleaning: No .gz files to clean found in #{CSV_SFTP_FILES}."
   end
-  puts "Double quotes and exclamation marks removed from all .csv files in #{CSV_SFTP_FILES}."
 end
