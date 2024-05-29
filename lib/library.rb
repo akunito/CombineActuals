@@ -7,6 +7,16 @@ def clean_output_directory(directory)
   FileUtils.rm Dir.glob(directory + '/*.csv')
 end
 
+def remove_specific_files(directory, filename)
+  # if file exists
+  if File.exist?(directory + filename)
+    puts 'Removing file: ' + directory + filename
+    FileUtils.rm Dir.glob(directory + filename)
+  else
+    puts 'File does not exist'
+  end
+end
+
 def menu
   puts "\t-------------------------------------------------------------------"
   puts "\t-------------------------------------------------------------------"
@@ -48,7 +58,7 @@ def clean(directory)
 end
 
 def merge_sap(output_path, array, base_path)
-  puts "\n---------- [2] - The SAP folders mentioned in the array will be merge by each folder/date ??"
+  puts "\n---------- [2] - The SAP folders mentioned in the array will be merged by each folder/date ??"
   puts "\n---------- The array contains the next folders"
   array.each { |folder| puts "         -> #{folder}" }
   puts
@@ -163,6 +173,11 @@ def get_full_datetime
   d.strftime("%Y%m%d_%Hh%Mm")
 end
 
+# create a directory with the given name
+def create_directory(directory)
+  Dir.mkdir(directory) unless Dir.exist?(directory)
+end
+
 def read_directory(directory)
   (Dir.entries(directory).select { |f| File.file? File.join(directory, f) }).to_ary
 end
@@ -208,6 +223,14 @@ def copy_files(origin, destination, origen_filename, destination_filename)
   puts "destination: #{destination}"
   FileUtils.cp(origin, destination)
   destination_filename
+end
+
+# move given files from one directory to another
+def move_files(origin, destination, files)
+  files.each do |file|
+    puts "Moving --> #{origin + file} to --> #{destination + file}"
+    FileUtils.mv(origin + file, destination)
+  end
 end
 
 def merge_file(result_file, headers, file_list, output_path, full_path)
@@ -261,14 +284,39 @@ end
 
 def get_opex_files(filenames)
   # check filenames array and select only the ones that contains opex or CP in the name
+  puts "note that this does not filter by extension !!"
   p filenames
   filenames.select do |filename|
     filename.include?("CP") ||
       filename.include?("opex")
   end
 end
+
+# get opex files filtered by extension
+def get_opex_files_by_extension(filenames, extension)
+  # check filenames array and select only the ones that contains opex or CP in the name
+  # remove all files that are not matching the extension
+  filenames.select! { |filename| filename.match?(extension) }
+  filenames.select do |filename|
+    filename.include?("CP") ||
+      filename.include?("opex")
+  end
+end
+
+# get capex files filtered by extension
+def get_capex_files_by_extension(filenames, extension)
+  # check filenames array and select only the ones that contains capex or AMP in the name
+  # remove all files that are not matching the extension
+  filenames.select! { |filename| filename.match?(extension) }
+  filenames.select do |filename|
+    filename.include?("AMP") ||
+      filename.include?("capex")
+  end
+end
+
 def get_capex_files(filenames)
   # check filenames array and select only the ones that contains capex or AMP in the name
+  puts "note that this does not filter by extension !!"
   p filenames
   filenames.select do |filename|
     filename.include?("AMP") ||
