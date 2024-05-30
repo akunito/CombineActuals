@@ -1,6 +1,9 @@
 require 'csv'
 require 'fileutils'
 
+# the concatenation of erp_columns generates erp unique key
+# erp_columns = ['refbn', 'belnr', 'buzei', 'kokrs', 'mandt', 'wkgbtr_f', 'budat_f', 'anlage_nr1', 'anlage_nr2']
+
 def get_headers(headers)
   if headers == "opex"
     headers = %w{SYSID	MANDT	KOKRS	REFBK	K_GJAHR	PERIO	ZZLEISTPER	KOSTL	OBJNR_N1	REFBN	BELNR	BUZEI	BLART	BLTXT_F	SGTXT_F	BLDAT_F	BUDAT_F	KSTAR	KSTAR_KTXT	GKONT	GKOAR	GKONT_KTXT	WOGBTR_F	OWAER	WTGBTR_F	TWAER	WKGBTR_F	KWAER	MBGBTR_F	VBUND	ZZZUKO1	REFBN_ZUONR_F	STOKZ	STFLG	AWORG_REV	AWREF_REV	XBLNR_F}
@@ -461,3 +464,34 @@ def create_empty_csv(path, file_name, filetype)
     end
   end
 end
+
+# clean duplicates
+# this function is not working yet.
+def clean_duplicates(path, filename, output_path, output_filename)
+  puts "Cleaning duplicates... #{filename}"	
+  input_file = path + filename
+  output_file = output_path + output_filename
+
+  # Define the columns to check for duplicates
+  columns_to_check = ['refbn', 'belnr', 'buzei', 'kokrs', 'mandt', 'wkgbtr_f', 'budat_f', 'anlage_nr1', 'anlage_nr2']
+
+  # Initialize a hash to store records
+  records = {}
+
+  # Read the input file and process each row
+  CSV.foreach(input_file, headers: true) do |row|
+    key = columns_to_check.map { |col| row[col] }.join('|') # Create a unique key for each row
+    records[key] ||= [] # Initialize an array for each key
+    records[key] << row.to_h # Store the entire row in the array
+  end
+
+  # Write unique records to the output file
+  CSV.open(output_file, 'w', write_headers: true, headers: records.values.first.first.keys) do |csv|
+    records.each_value do |rows|
+      rows.uniq { |row| columns_to_check.map { |col| row[col] }.join('|') }.each { |row| csv << row.values_at(*records.values.first.first.keys) }
+    end
+  end
+
+  puts "Duplicates removed. Unique records saved in #{output_file}"
+end
+

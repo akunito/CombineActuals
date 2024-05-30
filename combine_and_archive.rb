@@ -60,3 +60,13 @@ def combine_and_archive
   clean_sap_files
   import_sap_files
   combine_and_archive  
+
+  # ============= testing clean_duplicates =================
+  # dont know if this is needed or duplicates are legit
+  
+  # # test_file = "202405z_20240529_05h30m_FullMonth_combined_opex.csv"
+  # # test_output_file = "cleanDuplicates_202405z_20240529_05h30m_FullMonth_combined_opex.csv"
+  # test_file = "combined_capex.csv"
+  # test_output_file = "cleanDuplicates_combined_capex.csv"
+  # clean_duplicates(CSV_ACTUALS, test_file, CSV_ACTUALS, test_output_file)
+  
