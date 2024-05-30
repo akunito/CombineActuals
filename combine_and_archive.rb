@@ -53,5 +53,5 @@ def combine_and_archive
   end
   
   clean_sap_files
-  # import_sap_files
-  # combine_and_archive  
+  import_sap_files
+  combine_and_archive  
