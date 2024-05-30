@@ -1,6 +1,16 @@
 require 'csv'
 require 'fileutils'
 
+def get_headers(headers)
+  if headers == "opex"
+    headers = %w{SYSID	MANDT	KOKRS	REFBK	K_GJAHR	PERIO	ZZLEISTPER	KOSTL	OBJNR_N1	REFBN	BELNR	BUZEI	BLART	BLTXT_F	SGTXT_F	BLDAT_F	BUDAT_F	KSTAR	KSTAR_KTXT	GKONT	GKOAR	GKONT_KTXT	WOGBTR_F	OWAER	WTGBTR_F	TWAER	WKGBTR_F	KWAER	MBGBTR_F	VBUND	ZZZUKO1	REFBN_ZUONR_F	STOKZ	STFLG	AWORG_REV	AWREF_REV	XBLNR_F}
+  elsif headers == "capex"
+    headers = %w{SYSID	MANDT	KOKRS	BUKRS	ANLN1	ANLN2	KOSTL	ANLKL	GJAHR	MONAT	BELNR	BUDAT_F	BWASL	ANBTR_F	WAERS	SGTXT_F	BZDAT_F	MENGE_F	MEINS	ORIGIN_F	XBLNR_F	CAUFN	ANLHTXT_F}
+  elsif headers == "capex_depr"
+    headers = %w{SYSID MANDT KOKRS BUKRS ANLN0 AKTIV_F ANLHTXT_F ANSW_GJE_F AFA_GJE_F BCHWRT_GJE_F WAERS ANLKL TXK50_F CAUFN KOSTL LIEFE_F ZUJHR URJHR NDJAR NDPER BERDATUM_F}
+  end
+end
+
 # Removing files on the output directory
 def clean_output_directory(directory)
   p directory + '/*.csv'
@@ -440,12 +450,14 @@ def clean_sap_files
   end
 end
 
-def create_empty_csv(path, file_name)
+def create_empty_csv(path, file_name, filetype)
   file_path = path + file_name
+  # get headers
+  headers = get_headers(filetype)
   # check if the file exists
   unless File.exist?(file_path)
     CSV.open(file_path, 'w', quote_char: "\x00") do |csv|
-      csv << ['empty']
+      csv << headers
     end
   end
 end
