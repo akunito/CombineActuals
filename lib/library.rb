@@ -439,3 +439,13 @@ def clean_sap_files
     puts "========= Cleaning: No .gz files to clean found in #{CSV_SFTP_FILES}."
   end
 end
+
+def create_empty_csv(path, file_name)
+  file_path = path + file_name
+  # check if the file exists
+  unless File.exist?(file_path)
+    CSV.open(file_path, 'w', quote_char: "\x00") do |csv|
+      csv << ['empty']
+    end
+  end
+end
