@@ -50,6 +50,11 @@ def combine_and_archive
     move_files(CSV_ACTUALS, (CSV_ARCHIVE+full_datetime), opex_files)
     move_files(CSV_ACTUALS, (CSV_ARCHIVE+full_datetime), capex_files)
     move_files(CSV_ACTUALS, (CSV_ARCHIVE+full_datetime), capex_depr_files)
+
+    # As the interface is failing when a file is not found and the next file is not imported even if exists,
+    # we are now adding empty files in case they didn't exists.
+    create_empty_csv(CSV_ACTUALS, combined_opex_name)
+    create_empty_csv(CSV_ACTUALS, combined_capex_name)
   end
   
   clean_sap_files
