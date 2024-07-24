@@ -1,9 +1,6 @@
 require 'csv'
 require 'fileutils'
 
-# the concatenation of erp_columns generates erp unique key
-# erp_columns = ['refbn', 'belnr', 'buzei', 'kokrs', 'mandt', 'wkgbtr_f', 'budat_f', 'anlage_nr1', 'anlage_nr2']
-
 def get_headers(headers)
   if headers == "opex"
     headers = %w{SYSID	MANDT	KOKRS	REFBK	K_GJAHR	PERIO	ZZLEISTPER	KOSTL	OBJNR_N1	REFBN	BELNR	BUZEI	BLART	BLTXT_F	SGTXT_F	BLDAT_F	BUDAT_F	KSTAR	KSTAR_KTXT	GKONT	GKOAR	GKONT_KTXT	WOGBTR_F	OWAER	WTGBTR_F	TWAER	WKGBTR_F	KWAER	MBGBTR_F	VBUND	ZZZUKO1	REFBN_ZUONR_F	STOKZ	STFLG	AWORG_REV	AWREF_REV	XBLNR_F}
@@ -31,15 +28,18 @@ def remove_specific_files(directory, filename)
 end
 
 def menu
-  puts "\t-------------------------------------------------------------------"
-  puts "\t-------------------------------------------------------------------"
-  puts "\t[0] - EXIT --------------------------------------------------------"
-  puts "\t[1] - REMOVE Flat Files on 'combined_files' directory--------------"
-  puts "\t[2] - MERGE SAP files that are included in the ARRAY --------------"
-  puts "\t[3] - RECOMBINE output files from step 2 in only 1 file -----------"
-  puts "\t[4] - Modify ARRAY (work in progress) -----------------------------"
-  puts "\t-------------------------------------------------------------------"
-  puts "\t-------------------------------------------------------------------\n"
+  puts "\t------------------------------------------------------------------------------------------"
+  puts "\t------------------------------------------------------------------------------------------"
+  puts "\t[0] - EXIT -------------------------------------------------------------------------------"
+  puts "\t[1] - REMOVE Flat Files on 'combined_files' directory-------------------------------------"
+  puts "\t[2] - MERGE SAP files that are included in the ARRAY -------------------------------------"
+  puts "\t[3] - RECOMBINE output files from step 2 in only 1 file ----------------------------------"
+  puts "\t[4] - Modify ARRAY (work in progress) ----------------------------------------------------"
+  puts "\t[5] - Check Problematic chars on given file ----------------------------------------------"
+  puts "\t[6] - Compare 2 files and find characters missing on the first ---------------------------"
+  puts "\t[7] - Compare all files from two directories and find characters missing on the first ----"
+  puts "\t------------------------------------------------------------------------------------------"
+  puts "\t------------------------------------------------------------------------------------------\n"
 end
 
 def clear_screen
@@ -307,6 +307,7 @@ end
 def get_opex_files(filenames)
   # check filenames array and select only the ones that match the opex or the opex pattern
   puts "note that this does not filter by extension !!"
+  pattern = /CP.*B1F/
   p filenames
   # select only if matches the pattern
   filenames.select do |filename|
@@ -438,7 +439,7 @@ def clean_sap_files
       modified_data = csv_data.map do |row|
         row.map do |cell|
           next cell if cell.nil? # Skip empty cells
-          cell.gsub(/["!]/, '')
+          cell.gsub(/["!“”]/, '')
         end
       end
 
@@ -465,33 +466,75 @@ def create_empty_csv(path, file_name, filetype)
   end
 end
 
-# clean duplicates
-# this function is not working yet.
-def clean_duplicates(path, filename, output_path, output_filename)
-  puts "Cleaning duplicates... #{filename}"	
-  input_file = path + filename
-  output_file = output_path + output_filename
+def analyze_problematic_characters(path, file_name)
+  file_path = path + file_name
+  # Read the active file
+  content = File.read(file_path)
 
-  # Define the columns to check for duplicates
-  columns_to_check = ['refbn', 'belnr', 'buzei', 'kokrs', 'mandt', 'wkgbtr_f', 'budat_f', 'anlage_nr1', 'anlage_nr2']
+  # Define the regular expression pattern to match problematic characters
+  pattern = /[^\w\s\.,-]/
 
-  # Initialize a hash to store records
-  records = {}
+  # Find all occurrences of problematic characters
+  problematic_characters = content.scan(pattern)
 
-  # Read the input file and process each row
-  CSV.foreach(input_file, headers: true) do |row|
-    key = columns_to_check.map { |col| row[col] }.join('|') # Create a unique key for each row
-    records[key] ||= [] # Initialize an array for each key
-    records[key] << row.to_h # Store the entire row in the array
+  # Print the problematic characters
+  puts "Problematic Characters:"
+  problematic_characters.each do |char|
+    puts char
   end
-
-  # Write unique records to the output file
-  CSV.open(output_file, 'w', write_headers: true, headers: records.values.first.first.keys) do |csv|
-    records.each_value do |rows|
-      rows.uniq { |row| columns_to_check.map { |col| row[col] }.join('|') }.each { |row| csv << row.values_at(*records.values.first.first.keys) }
-    end
-  end
-
-  puts "Duplicates removed. Unique records saved in #{output_file}"
 end
 
+def find_new_chars_missing_on_previous_file(path, prev_file_name, new_file_name)
+
+  prev_file_path = path + prev_file_name
+  new_file_path = path + new_file_name
+
+  prev_content = File.read(prev_file_path)
+  new_content = File.read(new_file_path)
+
+  # build two arrays with unique characters found on both files
+  prev_chars = prev_content.chars.uniq
+  new_chars = new_content.chars.uniq
+
+  # find new characters that were not found on the previous file
+  new_chars_missing = new_chars - prev_chars
+  puts "\n\tNew characters missing on previous file: #{new_chars_missing}\n"
+end
+
+def compare_files_between_two_folders_and_find_new_unique_chars(prev_path, new_path)
+  # compare two folders and get new unique chars missing on prev files. For example:
+    # prev_path: D:\data_exchange\archive\20240722_02h00m
+    # new_path: D:\data_exchange\archive\20240723_02h00m  < if the new files contains chars that are not found on the prev files, return these new chars.
+  
+  # get list of files in prev folder
+  prev_files = read_directory(prev_path)
+  puts "prev_files: #{prev_files}"
+  # get list of files in new folder
+  new_files = read_directory(new_path)
+  puts "new_files: #{new_files}"
+
+  # get content from all the files in prev folder
+  prev_content = ""
+  prev_files.each do |file|
+    file_path = prev_path + file
+    content = File.read(file_path)
+    prev_content += content
+  end
+
+  # get content from all the files in new folder
+  new_content = ""
+  new_files.each do |file|
+    file_path = new_path + file
+    content = File.read(file_path)
+    new_content += content
+  end
+
+  # build two arrays with unique characters found on both files
+  prev_chars = prev_content.chars.uniq
+  new_chars = new_content.chars.uniq
+
+  # find new characters that were not found on the previous file
+  new_chars_missing = new_chars - prev_chars
+  puts "\n\tNew characters missing on previous folder's files: #{new_chars_missing}\n"
+
+end
