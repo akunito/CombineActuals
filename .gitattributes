@@ -1,0 +1,2 @@
+# Encrypted with git-crypt
+*.pdf filter=git-crypt diff=git-crypt
